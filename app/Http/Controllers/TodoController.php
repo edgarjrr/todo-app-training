@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Todo;
 use Illuminate\Http\Request;
 
 /**
@@ -22,7 +23,9 @@ class TodoController extends Controller
      */
     public function index()
     {
-        // TODO
+        $todos = Todo::get();
+
+        return $todos;
     }
 
     /**
@@ -35,7 +38,14 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        // TODO
+        $this->validate($request, [
+            'text' => 'required',
+            'done' => 'required',
+        ]);
+
+        Todo::create($request->all());
+
+        return;
     }
 
     /**
@@ -48,7 +58,15 @@ class TodoController extends Controller
      */
     public function update($id, Request $request)
     {
-        // TODO
+        $this->validate($request, [
+            'done' => 'required',
+        ]);
+
+        //dd($request);
+
+        Todo::find($id)->update($request->all());
+
+        return;
     }
 
     /**
@@ -58,8 +76,10 @@ class TodoController extends Controller
      * @param integer $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function delete($id)
+    public function destroy($id)
     {
-        // TODO
+        $todo = Todo::findOrFail($id);
+
+        $todo->delete();
     }
 }
