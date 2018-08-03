@@ -16,15 +16,15 @@
     export default {
         data () {
             return {
-                todoItemText: '',
-                errors: [],
+                todoItemText: ''
             }
         },
         methods: {
             newTodo () {
-              if(this.todoItemText != '')
-                this.$emit('sendNewTodoText', this.todoItemText);
-              else
+              if(this.todoItemText != '') {
+                this.$store.dispatch('addTodo',{text: this.todoItemText});
+                this.todoItemText = '';
+              } else
                 alert('Debes escribir un recordatorio');
             }
         }
