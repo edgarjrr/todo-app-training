@@ -10,18 +10,20 @@
 </template>
 <script>
     export default {
-        props: ['id',
-                'text',
-                'done'
-        ],
+        props: {
+            id: Number,
+            text: String,
+            done: Boolean,
+            todo: Object
+        },
 
         methods: {
             toggleDone () {
-                this.$emit('toDone', [this.id,this.done]);
+                this.$emit('toDone', this.todo);
             },
 
             removeTodo () {
-                this.$emit('delete', this.id);
+                this.$emit('delete', this.todo);
             }
         }
     }

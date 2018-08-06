@@ -29759,9 +29759,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    created: function created() {
-        this.getTodos();
-    },
     data: function data() {
         return {
             newTodotext: '',
@@ -29769,17 +29766,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             errors: []
         };
     },
+    mounted: function mounted() {
+        var _this = this;
+
+        var url = 'todo';
+        axios.get(url).then(function (response) {
+            _this.items = response.data;
+        });
+    },
 
 
     methods: {
-        getTodos: function getTodos() {
-            var _this = this;
-
-            var url = 'todo';
-            axios.get(url).then(function (response) {
-                _this.items = response.data;
-            });
-        },
         addTodo: function addTodo(todoText) {
             var _this2 = this;
 
@@ -29788,30 +29785,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 text: todoText,
                 done: 0
             }).then(function (response) {
-                _this2.getTodos();
+                _this2.items.push(response.data);
                 _this2.todoItemText = '';
                 _this2.errors = [];
             }).catch(function (error) {
                 _this2.errors = error.response.data;
             });
         },
-        removeTodo: function removeTodo(id) {
+        removeTodo: function removeTodo(todo) {
             var _this3 = this;
 
-            var url = 'todo/' + id;
+            var url = 'todo/' + todo.id;
             axios.delete(url).then(function (response) {
-                _this3.getTodos();
+                _this3.items = _this3.items.filter(function (item) {
+                    return item !== todo;
+                });
             });
         },
         toggleDone: function toggleDone(todo) {
-            var _this4 = this;
-
-            var url = 'todo/' + todo[0];
+            var url = 'todo/' + todo.id;
 
             axios.put(url, {
-                done: !todo[1]
+                done: !todo.done
             }).then(function (response) {
-                _this4.getTodos();
+                todo.done = !todo.done;
             });
         }
     }
@@ -29842,7 +29839,12 @@ var render = function() {
         { staticClass: "table is-bordered" },
         _vm._l(_vm.items, function(todo, index) {
           return _c("todo-item", {
-            attrs: { id: todo.id, text: todo.text, done: todo.done },
+            attrs: {
+              todo: todo,
+              id: todo.id,
+              text: todo.text,
+              done: todo.done
+            },
             on: {
               toDone: function($event) {
                 _vm.toggleDone($event)
@@ -30110,14 +30112,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['id', 'text', 'done'],
+    props: {
+        id: Number,
+        text: String,
+        done: Boolean,
+        todo: Object
+    },
 
     methods: {
         toggleDone: function toggleDone() {
-            this.$emit('toDone', [this.id, this.done]);
+            this.$emit('toDone', this.todo);
         },
         removeTodo: function removeTodo() {
-            this.$emit('delete', this.id);
+            this.$emit('delete', this.todo);
         }
     }
 });
