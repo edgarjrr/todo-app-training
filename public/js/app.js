@@ -29746,8 +29746,6 @@ module.exports = function normalizeComponent (
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -29786,55 +29784,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  *   addiciones o elimicaiones tomen efecto en el backend asi como la base de datos.
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
-    created: function created() {
-        this.getTodos();
-    },
     data: function data() {
-        var _ref;
-
-        return _ref = {
+        return {
             todoItemText: '',
-            items: []
-        }, _defineProperty(_ref, 'todoItemText', ''), _defineProperty(_ref, 'errors', []), _ref;
+            items: [],
+            errors: []
+        };
+    },
+    mounted: function mounted() {
+        var _this = this;
+
+        var url = 'todo';
+        axios.get(url).then(function (response) {
+            _this.items = response.data;
+        });
     },
 
-    /*mounted () {
-        this.items = [
-            { text: 'Primer recordatorio', done: true },
-            { text: 'Segundo recordatorio', done: false },
-            { text: 'Tercero recordatorio', done: false },
-            { text: 'Cuarto recordatorio', done: true },
-            { text: 'Quinto recordatorio', done: false },
-        ]
-    },*/
     methods: {
-        getTodos: function getTodos() {
-            var _this = this;
-
-            var url = 'todo';
-            axios.get(url).then(function (response) {
-                _this.items = response.data;
-            });
-        },
         addTodo: function addTodo() {
             var _this2 = this;
 
-            /*let text = this.todoItemText.trim()
-            if (text !== '') {
-                this.items.push({ text: text, done: false })
-                this.todoItemText = ''
-            }*/
             var url = 'todo';
             axios.post(url, {
                 text: this.todoItemText,
                 done: 0
             }).then(function (response) {
-                _this2.getTodos();
+                _this2.items.push(response.data);
                 _this2.todoItemText = '';
                 _this2.errors = [];
             }).catch(function (error) {
                 _this2.errors = error.response.data;
-                console.log(errors);
             });
         },
         removeTodo: function removeTodo(todo) {
@@ -29842,24 +29821,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
             var url = 'todo/' + todo.id;
             axios.delete(url).then(function (response) {
-                _this3.getTodos();
-                //this.items = response.data
+                _this3.items = _this3.items.filter(function (item) {
+                    return item !== todo;
+                });
             });
-            //this.items = this.items.filter(item => item !== todo)
         },
         toggleDone: function toggleDone(todo) {
-            var _this4 = this;
-
             var url = 'todo/' + todo.id;
 
-            //console.log(todo);
             axios.put(url, {
                 done: !todo.done
             }).then(function (response) {
-                _this4.getTodos();
-                //this.items = response.data
+                todo.done = !todo.done;
             });
-            //todo.done = !todo.done
         }
     }
 });

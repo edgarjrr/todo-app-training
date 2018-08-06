@@ -36,56 +36,37 @@
      *   addiciones o elimicaiones tomen efecto en el backend asi como la base de datos.
      */
     export default {
-        created () {
-            this.getTodos();
-        },
         data () {
             return {
                 todoItemText: '',
                 items: [],
-                todoItemText: '',
                 errors: [],
             }
         },
-        /*mounted () {
-            this.items = [
-                { text: 'Primer recordatorio', done: true },
-                { text: 'Segundo recordatorio', done: false },
-                { text: 'Tercero recordatorio', done: false },
-                { text: 'Cuarto recordatorio', done: true },
-                { text: 'Quinto recordatorio', done: false },
-            ]
-        },*/
+        mounted () {
+            let url = 'todo';
+            axios.get(url).then(response => {
+                this.items = response.data
+            });
+        },
         methods: {
-            getTodos () {
-                let url = 'todo';
-                axios.get(url).then(response => {
-                    this.items = response.data
-                });
-            },
             addTodo () {
-                /*let text = this.todoItemText.trim()
-                if (text !== '') {
-                    this.items.push({ text: text, done: false })
-                    this.todoItemText = ''
-                }*/
                 let url = 'todo';
                 axios.post(url, {
                     text: this.todoItemText,
                     done: 0
                 }).then(response => {
-                    this.getTodos();
+                    this.items.push(response.data);
                     this.todoItemText = '';
                     this.errors = [];
                 }).catch(error => {
                     this.errors = error.response.data
-                    console.log(errors);
                 });
             },
             removeTodo (todo) {
                 let url = 'todo/'+todo.id;
                 axios.delete(url).then(response => {
-                    this.getTodos();
+                    this.items = this.items.filter(item => item !== todo)
                 });
             },
             toggleDone (todo) {
@@ -94,7 +75,7 @@
                 axios.put(url, {
                     done: !todo.done
                 }).then(response => {
-                    this.getTodos();
+                    todo.done = !todo.done
                 });
             }
         }
